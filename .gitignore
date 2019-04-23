@@ -7,6 +7,9 @@ npm-debug.*
 *.mobileprovision
 debug.log
 
+secrets
+*.patch
+
 ### IntelliJ IDEA ###
 .idea
 *.iws

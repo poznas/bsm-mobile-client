@@ -23,7 +23,13 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bsm.mobile.expo",
+      "reversedClientId": "not gonna happen"
+    },
+    "android": {
+      "package": "com.bsm.mobile.expo",
+      "googleServicesFile": "./secrets/google-services.json"
     }
   }
 }
