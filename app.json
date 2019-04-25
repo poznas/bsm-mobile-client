@@ -25,7 +25,11 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.bsm.mobile.expo",
-      "reversedClientId": "not gonna happen"
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "not gonna happen"
+        }
+      }
     },
     "android": {
       "package": "com.bsm.mobile.expo",

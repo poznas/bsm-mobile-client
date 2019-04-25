@@ -1,12 +1,9 @@
-import {AppAuth} from 'expo-app-auth';
-import * as Constants from 'expo-constants';
-import {GoogleSignIn} from 'expo-google-sign-in';
+import {Constants, GoogleSignIn} from 'expo';
 import * as oath from './../../secrets/oauth-client-ids';
-import * as Platform from "react-native";
-
-const {OAuthRedirect, URLSchemes} = AppAuth;
+import {Platform} from "react-native";
 
 const isInClient = Constants.appOwnership === 'expo';
+
 if (isInClient) {
   GoogleSignIn.allowInClient();
 }
@@ -25,9 +22,27 @@ const clientId = isInClient
 const loginConnector = () => {
 
   const signInWithGoogle = async () => {
+    try {
+      await GoogleSignIn.initAsync({
+        scopes: ["profile", "email", "openid"],
+        isOfflineEnabled: true,
+        isPromptEnabled: true,
+        clientId,
+      });
+      await GoogleSignIn.askForPlayServicesAsync();
+      const data = await GoogleSignIn.signInAsync();
+      if (data.type === 'success') {
+        console.log("google login success");
+        console.log(data);
+      }
+    } catch ({message}) {
+      console.log('signInWithGoogle: ' + message);
+    }
+  };
 
+  return {
+    signInWithGoogle
   }
-
 };
 
 export default loginConnector();
