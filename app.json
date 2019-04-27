@@ -33,7 +33,12 @@
     },
     "android": {
       "package": "com.bsm.mobile.expo",
-      "googleServicesFile": "./secrets/google-services.json"
+      "googleServicesFile": "./secrets/google-services.json",
+      "config": {
+        "googleSignIn": {
+          "certificateHash": "B2:B2:B2:B2:B2:B2:B2:B2:B2:B2:B2:B2:B2:B2:B2:B2:XD:B2:B2:B2"
+        }
+      }
     }
   }
 }

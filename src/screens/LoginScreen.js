@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import GoogleSignInButton from "../components/GoogleSignInButton";
-import LoginConnector from "../connectors/LoginConnector";
+import GoogleConnector from "../connectors/GoogleConnector";
 import {View} from "react-native";
 
 class LoginScreen extends Component {
@@ -12,7 +12,7 @@ class LoginScreen extends Component {
   render() {
     return (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <GoogleSignInButton onPress={LoginConnector.signInWithGoogle}>
+          <GoogleSignInButton onPress={GoogleConnector.signInWithGoogle}>
             {LoginScreen.buttonTitle}
           </GoogleSignInButton>
         </View>
