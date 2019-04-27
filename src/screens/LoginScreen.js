@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import GoogleSignInButton from "../components/GoogleSignInButton";
 import GoogleConnector from "../connectors/GoogleConnector";
+import {loginWithGoogleIdToken} from "../connectors/AuthBackendConnector"
 import {View} from "react-native";
 
 class LoginScreen extends Component {
@@ -9,10 +10,14 @@ class LoginScreen extends Component {
     return "Sign-In with Google";
   }
 
+  signInWithGoogle = async () => {
+    await GoogleConnector.signInWithGoogle().then(loginWithGoogleIdToken);
+  };
+
   render() {
     return (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <GoogleSignInButton onPress={GoogleConnector.signInWithGoogle}>
+          <GoogleSignInButton onPress={this.signInWithGoogle}>
             {LoginScreen.buttonTitle}
           </GoogleSignInButton>
         </View>

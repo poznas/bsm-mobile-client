@@ -5,8 +5,14 @@ const credentials = () => {
 
   const insertValue = async (key, value) => {
     try {
-      console.log('insert credentials ', key, ' : ', value);
-      await SecureStore.setItem(key, value)
+      if(value) {
+        console.log('insert credentials ', key, ' : ', value);
+        await SecureStore.setItemAsync(key, value);
+      } else {
+        console.log('delete value for: ', key);
+        await SecureStore.deleteItemAsync(key);
+      }
+
     } catch (error) {
       console.log(error)
     }
@@ -14,18 +20,20 @@ const credentials = () => {
 
   const selectValue = async (key) => {
     try {
-      return await SecureStore.getItem(key);
+      return await SecureStore.getItemAsync(key);
     } catch (error) {
       console.log(error)
     }
   };
 
-  const setFromHeaders = async (headers) =>
-      [authHeader.refreshToken,
-        authHeader.accessToken,
-        authHeader.awsAccessToken,
-        authHeader.awsIdentity]
-      .forEach(header => insertValue(header, headers[header]));
+  const setFromHeaders = async (headers) => {
+    console.log(headers);
+    return [authHeader.refreshToken,
+      authHeader.accessToken,
+      authHeader.awsAccessToken,
+      authHeader.awsIdentity]
+    .forEach(header => insertValue(header, headers[header]));
+  };
 
   const getApiHeaders = async () =>
       [authHeader.refreshToken, authHeader.accessToken]
