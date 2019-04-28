@@ -4,6 +4,7 @@ import * as constant from './constants'
 import * as _ from 'lodash'
 import backendConnector from '../connectors/BackendConnector'
 import credentials from '../connectors/Credencials'
+import { optionIcons } from './OptionIcons'
 import { ListItem } from 'react-native-elements'
 
 class MainScreen extends Component {
@@ -36,7 +37,8 @@ class MainScreen extends Component {
   render() {
     return (
       <View style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: 'flex-start', flexDirection: 'column' }}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, alignItems: 'flex-start', flexDirection: 'column', paddingBottom: 8 }}>
           <View style={{
             justifyContent: 'space-around',
             alignItems: 'center',
@@ -68,10 +70,10 @@ class MainScreen extends Component {
     if (this.state.isLoading) {
       return <ActivityIndicator size={'large'} color={constant.mainColor} style={{ alignSelf: 'center', margin: 48 }}/>
     }
-    console.log(this.mainOptions)
     return this.mainOptions.map(option => this.userHasPrivileges(option.requiredPrivileges) ?
       <ListItem
         key={option.optionKey}
+        leftAvatar={{ source: optionIcons[option.optionKey] }}
         title={this.state.optionLabels.find(o => o.key === option.optionKey).value}
         onPress={option.onClick}
         style={{ alignSelf: 'stretch', height: 64 }}
