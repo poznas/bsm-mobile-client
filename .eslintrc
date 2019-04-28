@@ -1,0 +1,113 @@
+{
+  "env": {
+    "react-native/react-native": true,
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react-native/all"
+  ],
+  "plugins": [
+    "react",
+    "react-native"
+  ],
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 2017
+  },
+  "rules": {
+    "space-infix-ops": ["error", { "int32Hint": false }],
+    "for-direction": "error",
+    "getter-return": "error",
+    "no-constant-condition": "error",
+    "no-dupe-args": "error",
+    "no-dupe-keys": "error",
+    "no-duplicate-case": "error",
+    "no-empty-character-class": "error",
+    "no-ex-assign": "error",
+    "no-extra-boolean-cast": "error",
+    "no-extra-semi": "error",
+    "no-func-assign": "error",
+    "no-inner-declarations": "error",
+    "no-invalid-regexp": "error",
+    "no-irregular-whitespace": "error",
+    "no-obj-calls": "error",
+    "no-prototype-builtins": "error",
+    "no-regex-spaces": "error",
+    "no-sparse-arrays": "error",
+    "no-template-curly-in-string": "error",
+    "no-unexpected-multiline": "error",
+    "no-unreachable": "error",
+    "no-unsafe-finally": "error",
+    "no-unsafe-negation": "error",
+    "use-isnan": "error",
+    "valid-typeof": "error",
+    "no-empty": ["error", { "allowEmptyCatch": true }],
+    "no-cond-assign": ["error", "except-parens"],
+    "no-compare-neg-zero": "error",
+    "quotes": ["error", "single"],
+    "semi": ["error", "never"],
+    "curly": ["error", "all"],
+    "consistent-return": "error",
+    "comma-dangle": [
+      "error",
+      {
+        "arrays": "always-multiline",
+        "objects": "always-multiline",
+        "imports": "always-multiline",
+        "exports": "always-multiline",
+        "functions": "never"
+      }
+    ],
+    "no-console": "off",
+    "no-unused-vars": ["warn"],
+    "no-var": "error",
+    "prefer-const": "error",
+    "no-spaced-func": "error",
+    "array-callback-return": "error",
+    "lines-between-class-members": ["error", "always"],
+    "indent": ["error", 2],
+    "block-scoped-var": "error",
+    "no-multi-spaces": "error",
+    "brace-style": "error",
+    "no-mixed-spaces-and-tabs": "error",
+    "no-whitespace-before-property": "error",
+    "lines-around-comment": ["error", { "afterBlockComment": false }],
+    "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 1, "maxBOF": 0 }],
+    "space-before-blocks": ["error", "always"],
+    "object-curly-spacing": ["error", "always"],
+    "array-bracket-spacing": ["error", "never"],
+    "dot-location": ["error", "property"],
+    "eol-last": ["error", "always"],
+    "function-paren-newline": ["error", "multiline"],
+    "comma-spacing": [
+      "error", {
+        "before": false,
+        "after": true
+      }
+    ],
+    "spaced-comment": ["error", "always"],
+    "block-spacing": ["error", "always"],
+    "space-unary-ops": ["error", { "words": true, "nonwords": false }],
+    "space-before-function-paren": ["error", {
+      "anonymous": "always",
+      "named": "never",
+      "asyncArrow": "always"
+    }],
+    "keyword-spacing": ["error", { "before": true, "after": true }],
+    "space-in-parens": ["error", "never"],
+    "react-native/no-unused-styles": 2,
+    "react-native/split-platform-components": 2,
+    "react-native/no-inline-styles": 0,
+    "react-native/no-color-literals": 0,
+    "react-native/no-raw-text": 0,
+    "react/prop-types": 0
+  }
+}

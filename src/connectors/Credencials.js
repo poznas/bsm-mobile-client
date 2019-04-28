@@ -1,66 +1,75 @@
-import {authHeader} from "./AuthHeaders";
-import {SecureStore} from "expo";
+import { authHeader } from './AuthHeaders'
+import { SecureStore } from 'expo'
+
+const languageKey = 'lang'
 
 const credentials = () => {
 
   const insertValue = async (key, value) => {
     try {
       if (value) {
-        console.log('insert credentials ', key, ' : ', value);
-        await SecureStore.setItemAsync(key, value);
+        console.log('insert credentials ', key, ' : ', value)
+        await SecureStore.setItemAsync(key, value)
       } else {
-        console.log('delete value for: ', key);
-        await SecureStore.deleteItemAsync(key);
+        console.log('delete value for: ', key)
+        await SecureStore.deleteItemAsync(key)
       }
 
     } catch (error) {
       console.log(error)
     }
-  };
+  }
 
-  const selectValue = async (key) => {
+  const selectValue = async (key, defaultValue) => {
     try {
-      const value = await SecureStore.getItemAsync(key);
-      console.log('retrieve storage entry for ', key, ' : ', value);
-      return value;
+      const value = await SecureStore.getItemAsync(key)
+      console.log('retrieve storage entry for ', key, ' : ', value)
+      return value ? value : defaultValue
     } catch (error) {
       console.log(error)
+      return null
     }
-  };
+  }
 
   const setFromHeaders = async (headers) =>
-      [authHeader.refreshToken,
-        authHeader.accessToken,
-        authHeader.awsAccessToken,
-        authHeader.awsIdentity]
-      .forEach(header => insertValue(header, headers[header]));
+    [authHeader.refreshToken,
+      authHeader.accessToken,
+      authHeader.awsAccessToken,
+      authHeader.awsIdentity]
+      .forEach(header => insertValue(header, headers[header]))
 
   const getApiHeaders = async () => {
-    const headers = {};
+    const headers = {}
 
     const setHeader = async (header) =>
-        headers[header] = await selectValue(header);
+      headers[header] = await selectValue(header)
 
-    await setHeader(authHeader.refreshToken);
-    await setHeader(authHeader.accessToken);
+    await setHeader(authHeader.refreshToken)
+    await setHeader(authHeader.accessToken)
 
     if (headers[authHeader.refreshToken]) {
-      return headers;
+      return headers
     }
-    throw Error("No refresh token available");
-  };
+    throw Error('No refresh token available')
+  }
 
-  const getAwsAccessToken = async () => selectValue(authHeader.awsAccessToken);
+  const getAwsAccessToken = async () => selectValue(authHeader.awsAccessToken)
 
-  const getAwsIdentity = async () => selectValue(authHeader.awsIdentity);
+  const getAwsIdentity = async () => selectValue(authHeader.awsIdentity)
+
+  const getLanguage = async () => selectValue(languageKey, 'EN')
+
+  const setLanguage = async (lang) => insertValue(languageKey, lang)
 
   return {
+    getLanguage,
+    setLanguage,
     setFromHeaders,
     getApiHeaders,
     getAwsAccessToken,
-    getAwsIdentity
+    getAwsIdentity,
   }
 
-};
+}
 
-export default credentials();
+export default credentials()
