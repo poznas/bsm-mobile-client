@@ -4,3 +4,10 @@ export const authHeader = {
   awsAccessToken: 'x-aws-token',
   awsIdentity: 'x-aws-identity',
 }
+
+export const allAuthHeaders = [
+  authHeader.refreshToken,
+  authHeader.accessToken,
+  authHeader.awsAccessToken,
+  authHeader.awsIdentity,
+]

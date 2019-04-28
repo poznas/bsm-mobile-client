@@ -1,3 +1,6 @@
 {
-  "mainColor": "#FFBE00"
+  "mainColor": "#FFBE00",
+  "scoreBoard" : {
+    "background" : "#c8c8c8"
+  }
 }

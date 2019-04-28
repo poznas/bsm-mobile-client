@@ -5,9 +5,10 @@ import { fullPath, refreshTokens } from '../connectors/AuthBackendConnector'
 const backendConnector = () => {
 
   const getMyPrivileges = async () => await sendRequest('/user/my-privileges')
+  const getScores = async () => await sendRequest('/points/scores')
 
   const getDictionary = async (dictName) =>
-    sendRequest('dictionary' + dictName + '?lang=' + await credentials.getLanguage())
+    sendRequest('/dictionary/' + dictName + '?lang=' + await credentials.getLanguage())
 
   const put = async (url, body) => await sendRequest(url, body, 'put')
 
@@ -27,7 +28,7 @@ const backendConnector = () => {
       method: method,
       headers: await credentials.getApiHeaders(),
       data: body,
-    })
+    }).catch(error => error.response)
 
     log('response code: ' + response.status)
     console.log(response.data)
@@ -36,12 +37,14 @@ const backendConnector = () => {
       await refreshTokens()
       return await sendRequest(url, body, method, attempt + 1)
     }
+
     return response.data
   }
 
   return {
     getDictionary,
     getMyPrivileges,
+    getScores,
   }
 }
 

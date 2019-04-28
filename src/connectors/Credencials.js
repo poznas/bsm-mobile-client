@@ -1,4 +1,4 @@
-import { authHeader } from './AuthHeaders'
+import { allAuthHeaders, authHeader } from './AuthHeaders'
 import { SecureStore } from 'expo'
 
 const languageKey = 'lang'
@@ -32,11 +32,10 @@ const credentials = () => {
   }
 
   const setFromHeaders = async (headers) =>
-    [authHeader.refreshToken,
-      authHeader.accessToken,
-      authHeader.awsAccessToken,
-      authHeader.awsIdentity]
-      .forEach(header => insertValue(header, headers[header]))
+    allAuthHeaders.forEach(header => insertValue(header, headers[header]))
+
+  const clear = async () =>
+    allAuthHeaders.forEach(header => insertValue(header, undefined))
 
   const getApiHeaders = async () => {
     const headers = {}
@@ -68,6 +67,7 @@ const credentials = () => {
     getApiHeaders,
     getAwsAccessToken,
     getAwsIdentity,
+    clear,
   }
 
 }

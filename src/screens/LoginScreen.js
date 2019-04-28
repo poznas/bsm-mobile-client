@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import GoogleSignInButton from '../components/GoogleSignInButton'
 import GoogleConnector from '../connectors/GoogleConnector'
+import credentials from '../connectors/Credencials'
 import { loginWithGoogleIdToken } from '../connectors/AuthBackendConnector'
 import { ActivityIndicator, Image, View } from 'react-native'
 import * as constant from './constants'
@@ -9,12 +10,19 @@ class LoginScreen extends Component {
   constructor() {
     super()
     this.state = {
-      isLoading: false,
+      isLoading: true,
     }
   }
 
   static get buttonTitle() {
     return 'Sign-In with Google'
+  }
+
+  async componentDidMount() {
+    credentials.getApiHeaders().then(
+      () => this.props.navigation.navigate('App'),
+      () => this.setState({ isLoading: false })
+    )
   }
 
   signInWithGoogle = async () => {
