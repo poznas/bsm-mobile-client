@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native'
+import { ActivityIndicator, Image, ScrollView, Text, View } from 'react-native'
 import * as constant from './constants'
 import * as _ from 'lodash'
 import backendConnector from '../connectors/BackendConnector'
+import { getTeamImage } from '../connectors/S3Connector'
 import credentials from '../connectors/Credencials'
 import { optionIcons } from './OptionIcons'
 import { ListItem } from 'react-native-elements'
@@ -14,7 +15,9 @@ class MainScreen extends Component {
       isLoading: true,
       privileges: undefined,
       optionLabels: [],
+      isScoreBoardLoading: true,
       scores: undefined,
+      teamImages: undefined,
     }
   }
 
@@ -26,10 +29,17 @@ class MainScreen extends Component {
       this.setState({
         privileges: results[0],
         optionLabels: results[1],
+        isScoreBoardLoading: false,
         isLoading: false,
       })).then(() => {
       if (this.state.privileges.includes('PRV_AWS_RESOURCE_ACCESS')) {
-        backendConnector.getScores().then(scores => this.setState({ scores: scores }))
+        this.setState({ isScoreBoardLoading: true })
+
+        backendConnector.getScores()
+          .then(scores => this.setState({ scores: scores }))
+          .then(() => this.state.scores.map(score => getTeamImage(score.team.teamId)))
+          .then(results => Promise.all(results)
+            .then(teamImages => this.setState({ teamImages: teamImages, isScoreBoardLoading: false })))
       }
     })
   }
@@ -43,7 +53,9 @@ class MainScreen extends Component {
             justifyContent: 'space-around',
             alignItems: 'center',
             alignSelf: 'stretch',
-            height: 160,
+            flexDirection: 'row',
+            height: 200,
+            paddingTop: 28,
             backgroundColor: constant.scoreBoard.background,
           }}>
             {this.renderScoreBoard()}
@@ -54,17 +66,19 @@ class MainScreen extends Component {
     )
   }
 
-  renderScoreBoard = () => {
-    if (this.state.privileges) {
-      return this.state.scores ?
-        this.state.scores.map(score =>
-          <Text key={score.team.teamId}>
+  renderScoreBoard = () =>
+    !this.state.isScoreBoardLoading && this.state.scores ?
+      this.state.scores.map(score =>
+        <View key={score.team.teamId} style={{ alignItems: 'center' }}>
+          <Image source={{ uri: this.resolveTeamImage(score) }} style={{ width: 96, aspectRatio: 1 }}/>
+          <Text style={{ color: score.team.color, fontWeight: 'bold', fontSize: 16 }}>
             {score.team.displayName}
-          </Text>)
-        : undefined
-    }
-    return <ActivityIndicator size={'large'} color={constant.mainColor} style={{ alignSelf: 'center' }}/>
-  }
+          </Text>
+          <Text style={{ color: score.team.color, fontWeight: 'bold', fontSize: 40 }}>
+            {score.score}
+          </Text>
+        </View>)
+      : <ActivityIndicator size={'large'} color={constant.mainColor} style={{ alignSelf: 'center' }}/>
 
   renderOptions() {
     if (this.state.isLoading) {
@@ -74,7 +88,7 @@ class MainScreen extends Component {
       <ListItem
         key={option.optionKey}
         leftAvatar={{ source: optionIcons[option.optionKey] }}
-        title={this.state.optionLabels.find(o => o.key === option.optionKey).value}
+        title={this.resolveOptionLabel(option)}
         onPress={option.onClick}
         style={{ alignSelf: 'stretch', height: 64 }}
       /> : undefined)
@@ -103,6 +117,13 @@ class MainScreen extends Component {
 
   userHasPrivileges = (requiredPrivileges) =>
     _.difference(requiredPrivileges, this.state.privileges).length === 0
+
+  resolveOptionLabel = (option) => {
+    const dictEntry = this.state.optionLabels.find(o => o.key === option.optionKey)
+    return dictEntry ? dictEntry.value : option.optionKey
+  }
+
+  resolveTeamImage = (score) => this.state.teamImages.find(o => o.teamId === score.team.teamId).uri
 }
 
 export default MainScreen
