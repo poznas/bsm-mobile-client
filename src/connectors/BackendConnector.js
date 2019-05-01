@@ -7,6 +7,9 @@ const backendConnector = () => {
   const getMyPrivileges = async () => await sendRequest('/user/my-privileges')
   const getScores = async () => await sendRequest('/points/scores')
 
+  const getTeamPoints = async (teamId, page, size = 25) =>
+    await sendRequest('/points/team/' + teamId + '?size=' + size + '&page=' + page)
+
   const getDictionary = async (dictName) =>
     sendRequest('/dictionary/' + dictName + '?lang=' + await credentials.getLanguage())
 
@@ -45,6 +48,7 @@ const backendConnector = () => {
     getDictionary,
     getMyPrivileges,
     getScores,
+    getTeamPoints,
   }
 }
 
