@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { ActivityIndicator, Image, ScrollView, Text, View } from 'react-native'
+import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import * as constant from './constants'
 import * as _ from 'lodash'
 import backendConnector from '../connectors/BackendConnector'
@@ -7,6 +7,7 @@ import { getTeamImage } from '../connectors/S3Connector'
 import credentials from '../connectors/Credencials'
 import { optionIcons } from './OptionIcons'
 import { ListItem } from 'react-native-elements'
+import { Styles } from './Styles'
 
 class MainScreen extends Component {
   constructor() {
@@ -47,17 +48,8 @@ class MainScreen extends Component {
   render() {
     return (
       <View style={{ flex: 1 }}>
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1, alignItems: 'flex-start', flexDirection: 'column', paddingBottom: 8 }}>
-          <View style={{
-            justifyContent: 'space-around',
-            alignItems: 'center',
-            alignSelf: 'stretch',
-            flexDirection: 'row',
-            height: 200,
-            paddingTop: 28,
-            backgroundColor: constant.scoreBoard.background,
-          }}>
+        <ScrollView contentContainerStyle={Styles.scrollView}>
+          <View style={Styles.scoreBoard}>
             {this.renderScoreBoard()}
           </View>
           {this.renderOptions()}
@@ -68,16 +60,23 @@ class MainScreen extends Component {
 
   renderScoreBoard = () =>
     !this.state.isScoreBoardLoading && this.state.scores ?
-      this.state.scores.map(score =>
-        <View key={score.team.teamId} style={{ alignItems: 'center' }}>
-          <Image source={{ uri: this.resolveTeamImage(score) }} style={{ width: 96, aspectRatio: 1 }}/>
-          <Text style={{ color: score.team.color, fontWeight: 'bold', fontSize: 16 }}>
-            {score.team.displayName}
-          </Text>
-          <Text style={{ color: score.team.color, fontWeight: 'bold', fontSize: 40 }}>
-            {score.score}
-          </Text>
-        </View>)
+      this.state.scores.map(score => {
+        const teamImageUri = this.resolveTeamImage(score)
+        return <TouchableOpacity
+          key={score.team.teamId}
+          onPress={() => this.props.navigation.navigate('Points', { score: score, teamImageUri: teamImageUri })}
+        >
+          <View style={{ alignItems: 'center' }}>
+            <Image source={{ uri: teamImageUri }} style={{ width: 96, aspectRatio: 1 }}/>
+            <Text style={{ color: score.team.color, fontWeight: 'bold', fontSize: 16 }}>
+              {score.team.displayName}
+            </Text>
+            <Text style={{ color: score.team.color, fontWeight: 'bold', fontSize: 40 }}>
+              {score.score}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      })
       : <ActivityIndicator size={'large'} color={constant.mainColor} style={{ alignSelf: 'center' }}/>
 
   renderOptions() {

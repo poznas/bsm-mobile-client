@@ -19,7 +19,7 @@ const setCredentials = async () => {
     Logins: logins,
   })
 
-  AWS.config.credentials.get(function (err) {
+  AWS.config.credentials.get(err => {
     if (err) {
       console.log(err)
     }
