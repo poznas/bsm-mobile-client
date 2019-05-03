@@ -46,6 +46,10 @@ export default class SideMissionTypesScreen extends Component {
           title={getDictValue(this.state.missionLabels, type.typeId)}
           style={Styles.listItem}
           rightIcon={listItemArrow}
+          onPress={() => {
+            type.displayName = getDictValue(this.state.missionLabels, type.typeId)
+            return this.props.navigation.navigate('ReportSideMission', { missionType: type })
+          }}
         />)
       : commonActivityIndicator(128, 'stretch')
 }

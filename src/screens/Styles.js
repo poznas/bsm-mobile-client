@@ -17,4 +17,8 @@ export const Styles = StyleSheet.create({
     paddingTop: 28,
     backgroundColor: constant.scoreBoard.background,
   },
+  listItem: { alignSelf: 'stretch', height: 64 },
+  title: { fontWeight: 'bold', fontSize: 28 },
+  label: { fontWeight: 'bold', fontSize: 20 },
+  subLabel: { fontStyle: 'italic', fontSize: 16 },
 })

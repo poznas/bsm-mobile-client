@@ -19,3 +19,10 @@ export const getDictValue = (dictionary, key) => {
   const entry = dictionary.find(entry => entry.key === key)
   return entry ? entry.value : key
 }
+
+export const dictValueOrEmpty = (dictionary, key) => {
+  if (dictionary && dictionary.length > 0) {
+    return getDictValue(dictionary, key)
+  }
+  return ''
+}

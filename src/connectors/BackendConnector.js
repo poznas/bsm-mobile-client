@@ -12,6 +12,8 @@ const backendConnector = () => {
 
   const getSideMissionTypes = async () => await sendRequest('/side-mission/type/types')
 
+  const getTeammates = async () => await sendRequest('/user/users/teammates')
+
   const getDictionary = async (dictName) =>
     sendRequest('/dictionary/' + dictName + '?lang=' + await credentials.getLanguage())
 
@@ -52,6 +54,7 @@ const backendConnector = () => {
     getScores,
     getTeamPoints,
     getSideMissionTypes,
+    getTeammates,
   }
 }
 
