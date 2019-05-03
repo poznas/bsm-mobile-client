@@ -2,11 +2,13 @@ import { createAppContainer, createStackNavigator, createSwitchNavigator } from 
 import LoginScreen from '../screens/LoginScreen'
 import MainScreen from '../screens/MainScreen'
 import TeamPointsListScreen from '../screens/points/TeamPointsListScreen'
+import SideMissionTypesScreen from '../screens/side-mission/SideMissionTypesScreen'
 
 const AppStack = createStackNavigator(
   {
     Main: MainScreen,
     Points: TeamPointsListScreen,
+    MissionTypes: SideMissionTypesScreen,
   },
   {
     initialRouteName: 'Main',

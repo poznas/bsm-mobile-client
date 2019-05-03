@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
-import { ActivityIndicator, FlatList, Image, RefreshControl, ScrollView, Text, View } from 'react-native'
+import { FlatList, Image, RefreshControl, ScrollView, Text, View } from 'react-native'
 import { ListItem } from 'react-native-elements'
 import backendConnector from '../../connectors/BackendConnector'
 import * as constant from '../constants'
 import moment from 'moment'
 import { Styles } from '../Styles'
+import { commonActivityIndicator, listItemArrow } from '../../utils/CommonUtils'
 
 export default class TeamPointsListScreen extends Component {
   constructor() {
@@ -16,6 +17,7 @@ export default class TeamPointsListScreen extends Component {
       score: '',
       isLoading: true,
       isRefreshing: false,
+      isLoadingMore: false,
       points: [],
       page: 0,
       moreItemsAvailable: true,
@@ -49,15 +51,24 @@ export default class TeamPointsListScreen extends Component {
   }
 
   async onEndReached() {
-    if (this.state.moreItemsAvailable && !this.state.isRefreshing) {
-      await this.loadMoreItems()
+    if (this.state.moreItemsAvailable && !this.state.isRefreshing && !this.state.isLoadingMore) {
+      await this.setState({ isLoadingMore: true })
+      await this.loadMoreItems().then(() => this.setState({ isLoadingMore: false }))
     }
   }
 
   render() {
     return (
       <View style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={Styles.scrollView}>
+        <ScrollView
+          contentContainerStyle={Styles.scrollView}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.isRefreshing}
+              onRefresh={this.onRefresh.bind(this)}
+            />
+          }
+        >
           <View style={Styles.scoreBoard}>
             <Image source={{ uri: this.teamImageUri }} style={{ width: 128, aspectRatio: 1 }}/>
             <Text style={{ color: this.teamColor, fontWeight: 'bold', fontSize: 64 }}>
@@ -74,22 +85,20 @@ export default class TeamPointsListScreen extends Component {
 
   renderPoints = () => {
     if (this.state.isLoading) {
-      return <ActivityIndicator size={'large'} color={constant.mainColor} style={{ alignSelf: 'stretch', margin: 48 }}/>
+      return commonActivityIndicator(48, 'stretch')
     }
     return (
       <FlatList
         data={this.state.points}
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.isRefreshing}
-            onRefresh={this.onRefresh.bind(this)}
-          />
-        }
         renderItem={this.renderPointsItem}
-        keyExtractor={(item) => item.pointsId.toString()}
+        keyExtractor={(item) => item.pointsId.type + item.pointsId.id}
         onEndReachedThreshold={0.4}
         onEndReached={this.onEndReached.bind(this)}
         contentContainerStyle={{ paddingBottom: 20 }}
+        ListFooterComponent={() =>
+          this.state.isLoadingMore && !this.state.isRefreshing ?
+            commonActivityIndicator(20, undefined) : null
+        }
       />
     )
   }
@@ -97,16 +106,16 @@ export default class TeamPointsListScreen extends Component {
   renderPointsItem = ({ item }) => {
     return (
       <ListItem
-        style={{ alignSelf: 'stretch', height: 64 }}
-        leftAvatar={item.user ? { source: { uri: item.user.imageUrl } } : undefined}
-        title={item.user ? item.user.username : item.shortLabel}
+        style={Styles.listItem}
+        leftAvatar={item.user.imageUrl ? { source: { uri: item.user.imageUrl } } : undefined}
+        title={item.user.username ? item.user.username : item.shortLabel}
         subtitle={moment(Date.parse(item.timestamp.split('.')[0])).format('HH:mm / DD.MM.YY')}
 
         rightTitle={item.amount.toString()}
         rightTitleStyle={{ color: this.teamColor, fontWeight: 'bold', fontSize: 32 }}
         rightSubtitle={constant.pointsTypeSymbol[item.pointsId.type]}
         rightSubtitleStyle={{ color: 'purple', fontWeight: 'bold', fontSize: 16 }}
-        rightIcon={{ name: 'arrow-right', type: 'font-awesome', style: { marginRight: 10, fontSize: 15 } }}
+        rightIcon={listItemArrow}
       />
     )
   }

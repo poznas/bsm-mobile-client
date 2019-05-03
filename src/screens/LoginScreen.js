@@ -3,8 +3,8 @@ import GoogleSignInButton from '../components/GoogleSignInButton'
 import GoogleConnector from '../connectors/GoogleConnector'
 import credentials from '../connectors/Credencials'
 import { loginWithGoogleIdToken } from '../connectors/AuthBackendConnector'
-import { ActivityIndicator, Image, View } from 'react-native'
-import * as constant from './constants'
+import { Image, View } from 'react-native'
+import { commonActivityIndicator } from '../utils/CommonUtils'
 
 class LoginScreen extends Component {
   constructor() {
@@ -58,7 +58,7 @@ class LoginScreen extends Component {
 
   renderSignInButton() {
     if (this.state.isLoading) {
-      return <ActivityIndicator size={'large'} color={constant.mainColor}/>
+      return commonActivityIndicator()
     }
     return <GoogleSignInButton onPress={this.signInWithGoogle}>
       {LoginScreen.buttonTitle}

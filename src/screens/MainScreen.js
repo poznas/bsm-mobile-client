@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
-import * as constant from './constants'
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import * as _ from 'lodash'
 import backendConnector from '../connectors/BackendConnector'
 import { getTeamImage } from '../connectors/S3Connector'
@@ -8,6 +7,7 @@ import credentials from '../connectors/Credencials'
 import { optionIcons } from './OptionIcons'
 import { ListItem } from 'react-native-elements'
 import { Styles } from './Styles'
+import { commonActivityIndicator, getDictValue } from '../utils/CommonUtils'
 
 class MainScreen extends Component {
   constructor() {
@@ -77,24 +77,24 @@ class MainScreen extends Component {
           </View>
         </TouchableOpacity>
       })
-      : <ActivityIndicator size={'large'} color={constant.mainColor} style={{ alignSelf: 'center' }}/>
+      : commonActivityIndicator()
 
   renderOptions() {
     if (this.state.isLoading) {
-      return <ActivityIndicator size={'large'} color={constant.mainColor} style={{ alignSelf: 'center', margin: 48 }}/>
+      return commonActivityIndicator(48)
     }
     return this.mainOptions.map(option => this.userHasPrivileges(option.requiredPrivileges) ?
       <ListItem
         key={option.optionKey}
         leftAvatar={{ source: optionIcons[option.optionKey] }}
-        title={this.resolveOptionLabel(option)}
+        title={getDictValue(this.state.optionLabels, option.optionKey)}
         onPress={option.onClick}
-        style={{ alignSelf: 'stretch', height: 64 }}
+        style={Styles.listItem}
       /> : undefined)
   }
 
   mainOptions = [
-    mainOption('REPORT_SIDE_MISSION', ['PRV_REPORT_SM']),
+    mainOption('REPORT_SIDE_MISSION', ['PRV_REPORT_SM'], () => this.props.navigation.navigate('MissionTypes')),
     mainOption('JUDGE_RATE', ['PRV_JUDGE_RATE_SM']),
     mainOption('PROFESSOR_RATE', ['PRV_PROFESSOR_RATE_SM']),
     mainOption('PLAYING_USERS', ['PRV_JUDGE_RATE_SM']),
@@ -116,11 +116,6 @@ class MainScreen extends Component {
 
   userHasPrivileges = (requiredPrivileges) =>
     _.difference(requiredPrivileges, this.state.privileges).length === 0
-
-  resolveOptionLabel = (option) => {
-    const dictEntry = this.state.optionLabels.find(o => o.key === option.optionKey)
-    return dictEntry ? dictEntry.value : option.optionKey
-  }
 
   resolveTeamImage = (score) => this.state.teamImages.find(o => o.teamId === score.team.teamId).uri
 }
