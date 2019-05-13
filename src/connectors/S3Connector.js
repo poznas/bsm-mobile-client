@@ -2,6 +2,7 @@ import AWS from 'aws-sdk'
 import * as aws from './../../secrets/aws-secrets'
 import { refreshTokens } from './AuthBackendConnector'
 import credentials from './Credencials'
+import AmazonS3URI from 'amazon-s3-uri'
 
 AWS.config.update({
   region: aws.region,
@@ -26,12 +27,20 @@ const setCredentials = async () => {
   })
 }
 
+export const getImageByS3Url = async (url) => {
+  const { bucket, key } = AmazonS3URI(url)
+  return {
+    url: url,
+    base64Url: await getImageURI(key, 0, bucket),
+  }
+}
+
 export const getTeamImage = async (teamId) => ({
   uri: await getImageURI('team-images/' + teamId + '.png'),
   teamId: teamId,
 })
 
-const getImageURI = async (fileKey, attempt = 0) => {
+const getImageURI = async (fileKey, attempt = 0, bucket = 'bsm-user-media') => {
 
   const log = (message) =>
     console.log('[attempt : ' + attempt + '] ' + message)
@@ -39,7 +48,7 @@ const getImageURI = async (fileKey, attempt = 0) => {
   log('Get image from S3: ' + fileKey)
   await setCredentials()
 
-  const s3 = new AWS.S3({ params: { Bucket: 'bsm-user-media' } })
+  const s3 = new AWS.S3({ params: { Bucket: bucket } })
 
   try {
     return await s3.getObject({ Key: fileKey }).promise().then(encode)

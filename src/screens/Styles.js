@@ -21,4 +21,5 @@ export const Styles = StyleSheet.create({
   title: { fontWeight: 'bold', fontSize: 28 },
   label: { fontWeight: 'bold', fontSize: 20 },
   subLabel: { fontStyle: 'italic', fontSize: 16 },
+  midLabel: { fontSize: 18 },
 })
