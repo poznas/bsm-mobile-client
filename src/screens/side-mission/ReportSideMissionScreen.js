@@ -4,7 +4,8 @@ import backendConnector from '../../connectors/BackendConnector'
 import * as _ from 'lodash'
 import { Styles } from '../Styles'
 import { commonActivityIndicator, dictValueOrEmpty } from '../../utils/CommonUtils'
-import { ListItem } from 'react-native-elements'
+import { Button, Icon, ListItem } from 'react-native-elements'
+import { ImagePicker } from 'expo'
 import { getImageByS3Url } from '../../connectors/S3Connector'
 import { CustomPicker } from 'react-native-custom-picker'
 
@@ -19,6 +20,7 @@ export default class ReportSideMissionScreen extends Component {
       teammates: undefined,
       performingUserId: undefined,
       isLoading: true,
+      pickedFiles: [],
     }
   }
 
@@ -42,7 +44,26 @@ export default class ReportSideMissionScreen extends Component {
 
     Promise.all([loadTeammates, loadScreenLabels, loadMissionDict, loadProofImages])
       .then(() => this.setState({ isLoading: false }))
+  }
 
+  addFile = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: 'All',
+      allowsEditing: true,
+      quality: 0.2,
+    })
+    console.log(result)
+
+    if (!result.cancelled) {
+      this.setState({ pickedFiles: this.state.pickedFiles.concat([result]) })
+    }
+  }
+
+  deselectFile = async (uri) => {
+    console.log('deselect file: ' + uri)
+    const files = this.state.pickedFiles
+    _.remove(files, { uri: uri })
+    this.setState({ pickedFiles: files })
   }
 
   render() {
@@ -69,6 +90,10 @@ export default class ReportSideMissionScreen extends Component {
             {dictValueOrEmpty(this.state.labelDictionary, 'MIN_FILE_SET')}
           </Text>
           {this.renderProofsSpecification()}
+          <View style={{ alignSelf: 'stretch', width: '100%', paddingVertical: 16 }}>
+            {this.renderPickedFiles()}
+          </View>
+          {this.renderButtons()}
         </ScrollView>
       </View>
     )
@@ -114,4 +139,27 @@ export default class ReportSideMissionScreen extends Component {
       )
     })
   }
+
+  renderButtons = () =>
+    this.state.isLoading ? null
+      : <View style={{ alignSelf: 'stretch', width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Button
+          title={dictValueOrEmpty(this.state.labelDictionary, 'ADD_FILE')}
+          onPress={this.addFile}/>
+        <Button
+          title={dictValueOrEmpty(this.state.labelDictionary, 'SEND_REPORT')}/>
+      </View>
+
+  renderPickedFiles = () => this.state.pickedFiles.map(file => (
+    <View key={file.uri}
+      style={{ alignSelf: 'stretch', width: '100%', height: 64, flexDirection: 'row', alignItems: 'center' }}>
+      <Icon name='cross' type='entypo' color='red' size={48} onPress={() => this.deselectFile(file.uri)}/>
+      <Image source={{ uri: file.uri }} style={{ height: '90%', aspectRatio: 1, marginLeft: 16 }}/>
+      <Text style={[Styles.midLabel, { marginLeft: 16 }]}>
+        {dictValueOrEmpty(this.state.labelDictionary, fileTypeToKey(file.type))}
+      </Text>
+    </View>
+  ))
 }
+
+const fileTypeToKey = (fileType) => fileType === 'video' ? 'VIDEO' : 'PHOTO'
