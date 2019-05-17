@@ -21,6 +21,7 @@ export default class ReportSideMissionScreen extends Component {
       performingUserId: undefined,
       isLoading: true,
       pickedFiles: [],
+      disableSendAction: true,
     }
   }
 
@@ -55,7 +56,8 @@ export default class ReportSideMissionScreen extends Component {
     console.log(result)
 
     if (!result.cancelled) {
-      this.setState({ pickedFiles: this.state.pickedFiles.concat([result]) })
+      await this.setState({ pickedFiles: this.state.pickedFiles.concat([result]) })
+      await this.resolveSendActionAvailability()
     }
   }
 
@@ -64,6 +66,29 @@ export default class ReportSideMissionScreen extends Component {
     const files = this.state.pickedFiles
     _.remove(files, { uri: uri })
     this.setState({ pickedFiles: files })
+  }
+
+  resolveSendActionAvailability = async () => {
+    if (this.state.performingUserId) {
+      let requiredProofTypes = [...this.state.missionType.proofRequirements]
+
+      const leftMediaTypes = this.state.pickedFiles.filter(file => {
+        const match = _.find(requiredProofTypes, { type: fileTypeToKey(file) })
+        if (match) {
+          requiredProofTypes = _.without(requiredProofTypes, match)
+          return true
+        }
+        return false
+      }).length
+
+      const requiredAnyMediaCount = requiredProofTypes.filter(type => type === 'PHOTO_OR_VIDEO').length
+
+      const notMatchedRequiredSpecificMediaTypes = requiredProofTypes.length - requiredAnyMediaCount
+
+      const disableSendAction = leftMediaTypes < requiredAnyMediaCount || notMatchedRequiredSpecificMediaTypes > 0
+
+      this.setState({ disableSendAction: disableSendAction })
+    }
   }
 
   render() {
@@ -105,7 +130,7 @@ export default class ReportSideMissionScreen extends Component {
       placeholder={dictValueOrEmpty(this.state.labelDictionary, 'PERFORMING_USER')}
       options={this.state.teammates}
       getLabel={item => item.username}
-      onValueChange={item => item ? this.setState({ performingUserId: item.userId }) : undefined}
+      onValueChange={item => this.setState({ performingUserId: item ? item.userId : undefined })}
       optionTemplate={this.renderTeammate}
     />
 
@@ -147,6 +172,7 @@ export default class ReportSideMissionScreen extends Component {
           title={dictValueOrEmpty(this.state.labelDictionary, 'ADD_FILE')}
           onPress={this.addFile}/>
         <Button
+          disabled={this.state.disableSendAction}
           title={dictValueOrEmpty(this.state.labelDictionary, 'SEND_REPORT')}/>
       </View>
 
@@ -156,10 +182,10 @@ export default class ReportSideMissionScreen extends Component {
       <Icon name='cross' type='entypo' color='red' size={48} onPress={() => this.deselectFile(file.uri)}/>
       <Image source={{ uri: file.uri }} style={{ height: '90%', aspectRatio: 1, marginLeft: 16 }}/>
       <Text style={[Styles.midLabel, { marginLeft: 16 }]}>
-        {dictValueOrEmpty(this.state.labelDictionary, fileTypeToKey(file.type))}
+        {dictValueOrEmpty(this.state.labelDictionary, fileTypeToKey(file))}
       </Text>
     </View>
   ))
 }
 
-const fileTypeToKey = (fileType) => fileType === 'video' ? 'VIDEO' : 'PHOTO'
+const fileTypeToKey = (file) => file.type === 'video' ? 'VIDEO' : 'PHOTO'
