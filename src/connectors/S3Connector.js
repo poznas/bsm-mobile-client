@@ -3,6 +3,10 @@ import * as aws from './../../secrets/aws-secrets'
 import { refreshTokens } from './AuthBackendConnector'
 import credentials from './Credencials'
 import AmazonS3URI from 'amazon-s3-uri'
+import { FileSystem } from 'expo'
+import { Buffer } from 'buffer'
+
+global.Buffer = global.Buffer || require('buffer').Buffer
 
 AWS.config.update({
   region: aws.region,
@@ -27,6 +31,9 @@ const setCredentials = async () => {
   })
 }
 
+/**
+ * Download
+ */
 export const getImageByS3Url = async (url) => {
   const { bucket, key } = AmazonS3URI(url)
   return {
@@ -59,9 +66,9 @@ const getImageURI = async (fileKey, attempt = 0, bucket = 'bsm-user-media') => {
   } catch (e) {
     log(e.message)
 
-    await refreshTokens()
     if (attempt < maxRetryCalls) {
-      return getImageURI(fileKey, attempt + 1)
+      await refreshTokens()
+      return await getImageURI(fileKey, attempt + 1)
     }
     return undefined
   }
@@ -70,6 +77,40 @@ const getImageURI = async (fileKey, attempt = 0, bucket = 'bsm-user-media') => {
 const encode = (response) => {
   const str = response.Body.toString('base64')
   return 'data:' + response.ContentType + ';base64,' + str.replace(/.{76}(?=.)/g, '$&\n')
+}
+
+/**
+ * Upload
+ */
+export const uploadProofMedia = async (files) => {
+  await Promise.all(files.map(file => uploadFile(file.uri)))
+}
+
+const uploadFile = async (uri, attempt = 0, bucket = 'bsm-user-media') => {
+
+  const log = (message) =>
+    console.log('[attempt : ' + attempt + '] ' + message)
+
+  await setCredentials()
+  const s3 = new AWS.S3({ params: { Bucket: bucket } })
+  const fileKey = await credentials.getAwsIdentity() + '/' + Date.now() + uri.split('/').pop()
+
+  log('Put file [' + uri + '] to -> S3: |' + bucket + '| ' + fileKey)
+
+  try {
+    await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingTypes.Base64 })
+      .then(fileString => new Buffer(fileString, 'base64'))
+      .then(buffer => s3.upload({ Key: fileKey, Body: buffer }).promise())
+      .then(successData => console.log(successData))
+  } catch (e) {
+    console.log(e)
+    log(e.message)
+
+    if (attempt < maxRetryCalls) {
+      await refreshTokens()
+      await uploadFile(uri, attempt + 1)
+    }
+  }
 }
 
 const maxRetryCalls = 2

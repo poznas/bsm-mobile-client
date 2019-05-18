@@ -6,7 +6,7 @@ import { Styles } from '../Styles'
 import { commonActivityIndicator, dictValueOrEmpty } from '../../utils/CommonUtils'
 import { Button, Icon, ListItem } from 'react-native-elements'
 import { ImagePicker } from 'expo'
-import { getImageByS3Url } from '../../connectors/S3Connector'
+import { getImageByS3Url, uploadProofMedia } from '../../connectors/S3Connector'
 import { CustomPicker } from 'react-native-custom-picker'
 
 export default class ReportSideMissionScreen extends Component {
@@ -91,6 +91,10 @@ export default class ReportSideMissionScreen extends Component {
     }
   }
 
+  sendReport = async () => {
+    await uploadProofMedia(this.state.pickedFiles)
+  }
+
   render() {
     return (
       <View style={{ flex: 1 }}>
@@ -173,7 +177,8 @@ export default class ReportSideMissionScreen extends Component {
           onPress={this.addFile}/>
         <Button
           disabled={this.state.disableSendAction}
-          title={dictValueOrEmpty(this.state.labelDictionary, 'SEND_REPORT')}/>
+          title={dictValueOrEmpty(this.state.labelDictionary, 'SEND_REPORT')}
+          onPress={this.sendReport}/>
       </View>
 
   renderPickedFiles = () => this.state.pickedFiles.map(file => (
