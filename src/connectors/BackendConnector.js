@@ -4,22 +4,24 @@ import { fullPath, refreshTokens } from '../connectors/AuthBackendConnector'
 
 const backendConnector = () => {
 
-  const getMyPrivileges = async () => await sendRequest('/user/my-privileges')
-  const getScores = async () => await sendRequest('/points/scores')
+  const getMyPrivileges = () => sendRequest('/user/my-privileges')
+  const getScores = () => sendRequest('/points/scores')
 
-  const getTeamPoints = async (teamId, page, size = 25) =>
-    await sendRequest('/points/team/' + teamId + '?size=' + size + '&page=' + page)
+  const getTeamPoints = (teamId, page, size = 25) =>
+    sendRequest('/points/team/' + teamId + '?size=' + size + '&page=' + page)
 
-  const getSideMissionTypes = async () => await sendRequest('/side-mission/type/types')
+  const getSideMissionTypes = () => sendRequest('/side-mission/type/types')
 
-  const getTeammates = async () => await sendRequest('/user/users/teammates')
+  const getTeammates = () => sendRequest('/user/users/teammates')
+
+  const postSideMissionReport = (body) => post('/side-mission/report', body)
 
   const getDictionary = async (dictName) =>
     sendRequest('/dictionary/' + dictName + '?lang=' + await credentials.getLanguage())
 
-  const put = async (url, body) => await sendRequest(url, body, 'put')
+  const put = (url, body) => sendRequest(url, body, 'put')
 
-  const post = async (url, body) => await sendRequest(url, body, 'post')
+  const post = (url, body) => sendRequest(url, body, 'post')
 
   const sendRequest = async (url, body = {}, method = 'get', attempt = 0) => {
 
@@ -55,6 +57,7 @@ const backendConnector = () => {
     getTeamPoints,
     getSideMissionTypes,
     getTeammates,
+    postSideMissionReport,
   }
 }
 

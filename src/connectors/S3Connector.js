@@ -83,7 +83,7 @@ const encode = (response) => {
  * Upload
  */
 export const uploadProofMedia = async (files) => {
-  await Promise.all(files.map(file => uploadFile(file.uri)))
+  return await Promise.all(files.map(file => uploadFile(file.uri)))
 }
 
 const uploadFile = async (uri, attempt = 0, bucket = 'bsm-user-media') => {
@@ -98,18 +98,22 @@ const uploadFile = async (uri, attempt = 0, bucket = 'bsm-user-media') => {
   log('Put file [' + uri + '] to -> S3: |' + bucket + '| ' + fileKey)
 
   try {
-    await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingTypes.Base64 })
+    return await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingTypes.Base64 })
       .then(fileString => new Buffer(fileString, 'base64'))
       .then(buffer => s3.upload({ Key: fileKey, Body: buffer }).promise())
-      .then(successData => console.log(successData))
+      .then(successData => ({
+        uri: uri,
+        s3Url: successData.Location,
+      }))
   } catch (e) {
     console.log(e)
     log(e.message)
 
     if (attempt < maxRetryCalls) {
       await refreshTokens()
-      await uploadFile(uri, attempt + 1)
+      return await uploadFile(uri, attempt + 1)
     }
+    return undefined
   }
 }
 

@@ -8,6 +8,7 @@ import { Button, Icon, ListItem } from 'react-native-elements'
 import { ImagePicker } from 'expo'
 import { getImageByS3Url, uploadProofMedia } from '../../connectors/S3Connector'
 import { CustomPicker } from 'react-native-custom-picker'
+import Spinner from 'react-native-loading-spinner-overlay'
 
 export default class ReportSideMissionScreen extends Component {
   constructor() {
@@ -22,6 +23,7 @@ export default class ReportSideMissionScreen extends Component {
       isLoading: true,
       pickedFiles: [],
       disableSendAction: true,
+      sendingReport: false,
     }
   }
 
@@ -92,12 +94,30 @@ export default class ReportSideMissionScreen extends Component {
   }
 
   sendReport = async () => {
+    this.setState({ sendingReport: true })
     await uploadProofMedia(this.state.pickedFiles)
+      .then(uploadResults => ({
+        missionTypeId: this.state.missionType.typeId,
+        performingUserId: this.state.performingUserId,
+        proofMediaLinks: this.state.pickedFiles.map(file => ({
+          awsS3Url: _.find(uploadResults, { uri: file.uri }).s3Url,
+          type: fileTypeToKey(file),
+        })),
+      }))
+      .then(backendConnector.postSideMissionReport)
+      .then(() => this.setState({ sendingReport: false }))
+      .then(() => this.props.navigation.popToTop())
   }
 
   render() {
     return (
       <View style={{ flex: 1 }}>
+        <Spinner
+          visible={this.state.sendingReport}
+          overlayColor={'rgba(0,0,0,0.5)'}
+          textStyle={{ color: 'white' }}
+          textContent={dictValueOrEmpty(this.state.labelDictionary, 'SEND_REPORT') + '...'}
+        />
         <ScrollView
           contentContainerStyle={[Styles.scrollView, { paddingTop: 48, paddingHorizontal: 16, paddingBottom: 16 }]}>
           <View style={{ alignSelf: 'stretch', width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
