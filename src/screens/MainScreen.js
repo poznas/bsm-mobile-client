@@ -95,8 +95,14 @@ class MainScreen extends Component {
 
   mainOptions = [
     mainOption('REPORT_SIDE_MISSION', ['PRV_REPORT_SM'], () => this.props.navigation.navigate('MissionTypes')),
-    mainOption('JUDGE_RATE', ['PRV_JUDGE_RATE_SM']),
-    mainOption('PROFESSOR_RATE', ['PRV_PROFESSOR_RATE_SM']),
+    mainOption(
+      'JUDGE_RATE', ['PRV_JUDGE_RATE_SM'],
+      () => this.props.navigation.navigate('ReportsToRate', { raterType: 'JUDGE' })
+    ),
+    mainOption(
+      'PROFESSOR_RATE', ['PRV_PROFESSOR_RATE_SM'],
+      () => this.props.navigation.navigate('ReportsToRate', { raterType: 'PROFESSOR' })
+    ),
     mainOption('PLAYING_USERS', ['PRV_JUDGE_RATE_SM']),
     mainOption('REPORT_MAIN_COMPETITION', ['PRV_ADD_MC_POINTS']),
     mainOption('MEDAL', ['PRV_ADD_MEDAL_POINTS']),

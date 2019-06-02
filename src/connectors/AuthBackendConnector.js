@@ -12,8 +12,8 @@ export const loginWithGoogleIdToken = async (idToken) => {
   }
   console.log('loginWithGoogleIdToken: ', params)
 
-  await axios.get(fullPath('/login'), params).then(
-    (data) => credentials.setFromHeaders(data.headers), console.log)
+  await axios.get(fullPath('/login'), params)
+    .then((data) => credentials.setFromHeaders(data.headers), console.log)
 }
 
 export const refreshTokens = async () => {

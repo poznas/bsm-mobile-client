@@ -16,6 +16,8 @@ const backendConnector = () => {
 
   const postSideMissionReport = (body) => post('/side-mission/report', body)
 
+  const getReportsToRate = (rater) => sendRequest('/side-mission/report/reports/' + rater)
+
   const getDictionary = async (dictName) =>
     sendRequest('/dictionary/' + dictName + '?lang=' + await credentials.getLanguage())
 
@@ -58,6 +60,7 @@ const backendConnector = () => {
     getSideMissionTypes,
     getTeammates,
     postSideMissionReport,
+    getReportsToRate,
   }
 }
 
