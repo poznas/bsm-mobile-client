@@ -34,6 +34,11 @@ const setCredentials = async () => {
 /**
  * Download
  */
+export const getThumbnail = async (url) =>
+  Promise.resolve(url.replace(/\.\w+$/, '-thumbnail.jpg')).then(AmazonS3URI)
+    .then(({ bucket, key }) => getImageURI(key, 0, bucket))
+    .then(base64Image => ({ url: url, base64Url: base64Image }))
+
 export const getImageByS3Url = async (url) => {
   const { bucket, key } = AmazonS3URI(url)
   return {

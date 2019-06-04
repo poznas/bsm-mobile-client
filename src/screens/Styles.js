@@ -8,6 +8,13 @@ export const Styles = StyleSheet.create({
     flexDirection: 'column',
     paddingBottom: 8,
   },
+  horizontalScrollView: {
+    flexGrow: 1,
+    height: 128,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    backgroundColor: constant.scoreBoard.background,
+  },
   scoreBoard: {
     justifyContent: 'space-around',
     alignItems: 'center',

@@ -43,16 +43,19 @@ export default class ReportsToRateScreen extends Component {
 
   renderMissionTypes = () =>
     !this.state.isLoading && this.state.reports ?
-      this.state.reports.map(report =>
-        <ListItem
+      this.state.reports.map(report => {
+        const typeLabel = getDictValue(this.state.missionLabels, report.missionTypeId)
+        return <ListItem
           key={report.reportId}
           leftAvatar={{ source: { uri: report.performingUser.imageUrl } }}
           title={report.performingUser.username}
-          subtitle={getDictValue(this.state.missionLabels, report.missionTypeId)}
+          subtitle={typeLabel}
           rightTitle={moment(Date.parse(report.reportTimestamp.split('.')[0])).format('HH:mm')}
           rightSubtitle={moment(Date.parse(report.reportTimestamp.split('.')[0])).format('DD.MM.YY')}
           style={Styles.listItem}
-        />)
+          onPress={() => this.props.navigation.navigate('RateReportScreen', { report: report, typeLabel: typeLabel })}
+        />
+      })
       : commonActivityIndicator(128, 'stretch')
 
 }

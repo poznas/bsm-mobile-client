@@ -5,6 +5,7 @@ import TeamPointsListScreen from '../screens/points/TeamPointsListScreen'
 import SideMissionTypesScreen from '../screens/side-mission/SideMissionTypesScreen'
 import ReportSideMissionScreen from '../screens/side-mission/ReportSideMissionScreen'
 import ReportsToRateScreen from '../screens/side-mission/rate/ReportsToRateScreen'
+import RateReportScreen from '../screens/side-mission/rate/RateReportScreen'
 
 const AppStack = createStackNavigator(
   {
@@ -13,6 +14,7 @@ const AppStack = createStackNavigator(
     MissionTypes: SideMissionTypesScreen,
     ReportSideMission: ReportSideMissionScreen,
     ReportsToRate: ReportsToRateScreen,
+    RateReportScreen: RateReportScreen,
   },
   {
     initialRouteName: 'Main',
