@@ -14,11 +14,18 @@ const backendConnector = () => {
 
   const getTeammates = () => sendRequest('/user/users/teammates')
 
+  const getTeamDetails = (teamId) => sendRequest('/user/team/' + teamId)
+
   const postSideMissionReport = (body) => post('/side-mission/report', body)
 
   const getReportsToRate = (rater) => sendRequest('/side-mission/report/reports/' + rater)
 
   const getReportProofs = (reportId) => sendRequest('/side-mission/report/' + reportId + '/proofs')
+
+  const getSideMissionType = (typeId) => sendRequest('/side-mission/type/' + typeId)
+
+  const postReportRate = (reportId, raterType, rates) =>
+    post('/side-mission/report/' + reportId + '/rate/' + raterType, rates)
 
   const getDictionary = async (dictName) =>
     sendRequest('/dictionary/' + dictName + '?lang=' + await credentials.getLanguage())
@@ -61,9 +68,12 @@ const backendConnector = () => {
     getTeamPoints,
     getSideMissionTypes,
     getTeammates,
+    getTeamDetails,
     postSideMissionReport,
     getReportsToRate,
     getReportProofs,
+    getSideMissionType,
+    postReportRate,
   }
 }
 

@@ -53,7 +53,8 @@ export default class ReportsToRateScreen extends Component {
           rightTitle={moment(Date.parse(report.reportTimestamp.split('.')[0])).format('HH:mm')}
           rightSubtitle={moment(Date.parse(report.reportTimestamp.split('.')[0])).format('DD.MM.YY')}
           style={Styles.listItem}
-          onPress={() => this.props.navigation.navigate('RateReportScreen', { report: report, typeLabel: typeLabel })}
+          onPress={() => this.props.navigation
+            .navigate('RateReportScreen', { report: report, typeLabel: typeLabel, raterType: this.raterType })}
         />
       })
       : commonActivityIndicator(128, 'stretch')
